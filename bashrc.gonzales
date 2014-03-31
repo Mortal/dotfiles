@@ -1,0 +1,190 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+alias ls='ls --color=auto'
+
+alias p='sudo pacman'
+alias y='yaourt'
+alias decibel='python2 /home/rav/work/decibel-audio-player/src/decibel-audio-player.py'
+alias vimgolf=/ssd/home/.gem/ruby/2.0.0/bin/vimgolf
+
+export EDITOR=vim
+
+export LSARGS='--group-directories-first --color=auto'
+# from dircolors
+LS_COLORS='rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=00;36:*.tgz=00;36:*.arj=00;36:*.taz=00;36:*.lzh=00;36:*.lzma=00;36:*.tlz=00;36:*.txz=00;36:*.zip=00;36:*.z=00;36:*.Z=00;36:*.dz=00;36:*.gz=00;36:*.lz=00;36:*.xz=00;36:*.bz2=00;36:*.bz=00;36:*.tbz=00;36:*.tbz2=00;36:*.tz=00;36:*.deb=00;36:*.rpm=00;36:*.jar=00;36:*.war=00;36:*.ear=00;36:*.sar=00;36:*.rar=00;36:*.ace=00;36:*.zoo=00;36:*.cpio=00;36:*.7z=00;36:*.rz=00;36:*.jpg=00;36:*.jpeg=00;36:*.gif=00;36:*.bmp=00;36:*.pbm=00;36:*.pgm=00;36:*.ppm=00;36:*.tga=00;36:*.xbm=00;36:*.xpm=00;36:*.tif=00;36:*.tiff=00;36:*.png=00;36:*.svg=00;36:*.svgz=00;36:*.mng=00;36:*.pcx=00;36:*.mov=00;36:*.mpg=00;36:*.mpeg=00;36:*.m2v=00;36:*.mkv=00;36:*.webm=00;36:*.ogm=00;36:*.mp4=00;36:*.m4v=00;36:*.mp4v=00;36:*.vob=00;36:*.qt=00;36:*.nuv=00;36:*.wmv=00;36:*.asf=00;36:*.rm=00;36:*.rmvb=00;36:*.flc=00;36:*.avi=00;36:*.fli=00;36:*.flv=00;36:*.gl=00;36:*.dl=00;36:*.xcf=00;36:*.xwd=00;36:*.yuv=00;36:*.cgm=00;36:*.emf=00;36:*.axv=00;36:*.anx=00;36:*.ogv=00;36:*.ogx=00;36:*.aac=00;36:*.au=00;36:*.flac=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.axa=00;36:*.oga=00;36:*.spx=00;36:*.xspf=00;36:*.c=32:*.cmake=32:*.cpp=32:*.h=32:*.html=32:*.inl=32:*.java=32:*.js=32:*.py=32:*.tex=32:';
+export LS_COLORS
+alias ls="ls $LSARGS"
+
+export WATCHARGS='--no-title'
+alias watch="watch $WATCHARGS"
+alias w='watch -n 1'
+alias ww='watch -n .2'
+alias www='watch -n .05'
+
+alias pictorismasq='sudo ifconfig eth0 up 192.168.32.1 && sudo dnsmasq -K --interface=eth0 --dhcp-range=192.168.32.4,192.168.32.4'
+
+alias tutormysql='mysql --defaults-extra-file=~/tutordb.cnf'
+alias mysqlroot='mysql --defaults-extra-file=~/mysqlroot.cnf'
+
+githelp() {
+	pushd /usr/share/doc/git-doc > /dev/null
+	if [ -e "git-$1" ]; then
+		xdg-open git-$1 > /dev/null 2>&1
+	elif [ -e "git-$1.pdf" ]; then
+		xdg-open git-$1.pdf > /dev/null 2>&1
+	elif [ -e "git-$1.html" ]; then
+		xdg-open git-$1.html > /dev/null 2>&1
+	elif [ -e "$1" ]; then
+		xdg-open $1 > /dev/null 2>&1
+	elif [ -e "$1.pdf" ]; then
+		xdg-open $1.pdf > /dev/null 2>&1
+	elif [ -e "$1.html" ]; then
+		xdg-open $1.html > /dev/null 2>&1
+	else
+		echo "Could not find the help file." >&2
+	fi
+	popd > /dev/null
+}
+
+export PATH=$PATH:~/bin
+
+#export CC=clang
+#export CFLAGS="-O2 -Wall -Wextra"
+#export CXX=clang++
+#export CXXFLAGS="-O2 -Wall -Wextra"
+
+export CTEST_OUTPUT_ON_FAILURE=1
+
+asl() {
+	as --32 -o $@.o $@.S && ld -m elf_i386 -o $@ $@.o && (./$@; echo $?)
+}
+
+cmakebuild() {
+	dir="$1"
+	shift
+	if [ "x$dir" == x ]; then
+		dir=build
+		if [ -e "$dir" ]; then
+			echo "Which directory?"
+			return
+		fi
+	fi
+	buildtype=Release
+	if echo "$dir" | grep -q -x -i debug; then
+		buildtype=Debug
+	fi
+	if [ -e "$dir" ]; then
+		echo "Removing $dir"
+		rm -rfI "$dir" || return
+	fi
+	mkdir -p "$dir" || return
+	cd "$dir" || return
+	cmake -D CMAKE_BUILD_TYPE:STRING=$buildtype .. || return
+	make -j9 $* || return
+}
+
+export PERL_LOCAL_LIB_ROOT="/home/rav/perl5";
+export PERL_MB_OPT="--install_base /home/rav/perl5";
+export PERL_MM_OPT="INSTALL_BASE=/home/rav/perl5";
+export PERL5LIB="/home/rav/perl5/lib/perl5/x86_64-linux-thread-multi:/home/rav/perl5/lib/perl5";
+export PATH="/home/rav/perl5/bin:$PATH:/home/rav/work/ext/OracleCalendar/bin";
+
+export LANG=en_US.UTF-8
+
+export MAKEFLAGS=-j9
+
+downtrack() {
+	if [ x == "x$1" ]; then
+		echo "Usage: $0 file expected_size"
+		return
+	fi
+	file=$1
+	rem=$(echo "($2)-("$(stat -c %s "$file" )")"|sed -e 's/G/*1024M/ig; s/M/*1024K/ig; s/K/*1024/ig'|bc)
+	tail -fn 0 "$file" |bar -s $rem > /dev/null
+}
+
+# uncomment for a colored prompt, if the terminal has the capability; turned
+# off by default to not distract the user: the focus in a terminal window
+# should be on the output of commands, not on the prompt
+force_color_prompt=yes
+
+if [ -n "$force_color_prompt" ]; then
+    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
+    else
+        color_prompt=
+    fi
+fi
+
+if [ "$color_prompt" = yes ]; then
+    PS1='\[\033[01;35m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+else
+    PS1='\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+if [ -d /tmp/screens/S-rav ] && ls /tmp/screens/S-rav | grep -q .; then
+	export SCREENDIR=/tmp/screens/S-rav
+fi
+
+qvim() {
+	vim +'set autowrite' +'nnoremap <BS> :cprev<CR>zz' +'nnoremap <Space> :cc<CR>zz' +'nnoremap <CR> :cn<CR>zz' -q $@
+}
+
+alias am='setxkbmap us'
+alias ma='setxkbmap dvorak'
+
+alias mountphone='go-mtpfs Android'
+
+# SSH agent
+AGENT_SCRIPT=~/.sshagent
+if [ -r "$AGENT_SCRIPT" ]; then
+	. "$AGENT_SCRIPT"
+fi
+if ! ps "$SSH_AGENT_PID" >/dev/null 2>&1 \
+	|| ! [ -r "$SSH_AUTH_SOCK" ]; then
+	ssh-agent | head -2 > "$AGENT_SCRIPT"
+	. "$AGENT_SCRIPT"
+fi
+echo "ssh-agent pid $SSH_AGENT_PID"
+
+# From /usr/share/doc/pkgfile/command-not-found.bash
+command_not_found_handle () {
+  local pkgs cmd=$1
+
+  printf "bash: $(gettext bash "%s: command not found")\n" "$cmd" >&2
+  mapfile -t pkgs < <(pkgfile -bv -- "$cmd" 2>/dev/null)
+  if (( ${#pkgs[*]} )); then
+    printf '%s may be found in the following packages:\n' "$cmd"
+    printf '  %s\n' "${pkgs[@]}"
+  fi
+  return 127
+}
+
+sanford_tunnel() {
+	ssh -tt -R2345:127.0.0.1:22 au 'hostname; ssh -tt -R2345:127.0.0.1:2345 sanford "hostname; ssh -N -o Port=2345 -o HostName=localhost gonzales"'
+}
+
+roxboro_tunnel() {
+	ssh -tt -R2345:127.0.0.1:22 au 'hostname; ssh -tt -R2345:127.0.0.1:2345 madalgo@roxboro'
+}
+
+git_commit_time() {
+	git status --porcelain | \
+		sed -rne 's/^[MADRC]. (.* -> )?(.*)/\2/; t print; b; : print; p' | \
+		xargs ls -t | \
+		head -1 | \
+		xargs stat -c %Y
+}

@@ -1,0 +1,103 @@
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Language agnostic
+
+set nocompatible modeline cindent cino+=(0 lbr ruler
+set termencoding=utf8 encoding=utf8 t_Co=256 bs=0
+set mouse=a
+set history=500
+
+" Make gui look like the terminal
+set go-=egmrLtT go+=c
+
+colo slate
+set bg=dark
+
+" Move by display lines rather than physical lines
+nnoremap j gj
+nnoremap k gk
+nnoremap 0 g0
+
+nmap <Up> 3<C-Y>
+nmap <Down> 3<C-E>
+
+syntax on
+filetype indent plugin on
+
+" Highlight search, and press Alt-u to hide highlighting (just like in less)
+set hls
+nmap <Esc>u :<C-U>noh<CR>
+nmap <A-u> :<C-U>noh<CR>
+autocmd FileType * highlight Search ctermbg=DarkBlue
+
+" Highlight extra whitespace (tabs/spaces) at end of line
+highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen
+au FileType * highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen
+au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+au InsertLeave,BufWinEnter * match ExtraWhitespace /\s\+$/
+au FileType python highlight ExtraWhitespace NONE
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Status line color (per host)
+
+highlight StatusLine ctermfg=5
+highlight StatusLineNC ctermfg=5
+au FileType * highlight StatusLine ctermfg=5
+au FileType * highlight StatusLineNC ctermfg=5
+set laststatus=2
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" LaTeX
+
+autocmd FileType tex set nocindent
+autocmd FileType tex set shiftwidth=2 softtabstop=2 expandtab
+
+function! BackTick()
+  let c = getline('.')[col('.')-2]
+  if c == ' '
+    return '\texttt{'
+  else
+    return '}'
+  endif
+endfunction
+
+"au FileType tex imap ` <C-R>=BackTick()<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" HTML
+
+" I know what <b> and <i> look like
+let html_no_rendering=1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" C++
+
+" C++11 lambda syntax
+let c_no_curly_error=1
+
+highlight TPIEType ctermfg=68
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Python
+
+autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" OCaml
+
+function! OCamlType()
+  let col  = col('.')
+  let line = line('.')
+  let file = expand("%:p:r")
+  echo ("annot -n -type ".line." ".col." ".file.".annot")
+  echo system("annot -n -type ".line." ".col." ".file.".annot")
+endfunction
+map <leader>. :call OCamlType()<cr>
+
+set suffixes+=.annot
+
+au FileType omlet abbrev <buffer> ... (Error.internal_compiler_error "...")
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Haskell
+au FileType haskell setlocal comments&
+au FileType haskell setlocal comments=:--
