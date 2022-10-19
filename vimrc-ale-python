@@ -1,0 +1,14 @@
+" When running mypy, also check functions that don't have a return type.
+let g:ale_python_mypy_options = '--check-untyped-defs'
+" Don't add stuff in the margin.
+let g:ale_set_signs = 0
+" Let me ask for the autocompletion popup with CTRL-X CTRL-O in insert mode.
+set omnifunc=ale#completion#OmniFunc
+" Only do the linting when I save the file.
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_insert_leave = 0
+let g:ale_lint_on_filetype_changed = 0
+" Don't show stuff in the status line (other than lint errors). (Not relevant in Python?)
+let g:ale_hover_cursor = 0
